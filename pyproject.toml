@@ -20,7 +20,7 @@ dependencies = [
   "click>=8.1.8",
   "mcpstack>=0.0.2",
   "pandas>=2.2.0",
-  "autoddg",
+#  "autoddg", # update # [tool.uv.sources]
 ]
 
 [dependency-groups]
@@ -51,5 +51,5 @@ ignore = ["E501"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 
-[tool.uv.sources]
-autoddg = { path = "../../../NYU/AutoDDG" }
+#[tool.uv.sources]
+#autoddg = { path = "../../../NYU/AutoDDG" }

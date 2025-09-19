@@ -36,7 +36,8 @@
 > [!NOTE]
 > For the time being, this MCP is working with the branch `feat/modern_pythonic_library_transformation` from the
 > mother library, AutoDDG. See more at: https://github.com/VIDA-NYU/AutoDDG/pull/4.
-> As such, we recommend you to instal AutoDDG from source with this library, until the PR is merged upstream.
+> As such, we recommend you to install AutoDDG from source with this library, until the PR is merged upstream.
+> Adapt the "autoddg" in the dependencies in `pyproject.toml` accordingly.
 
 ## 💡 About The MCPStack AutoDDG Tool
 
