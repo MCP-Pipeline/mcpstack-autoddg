@@ -33,6 +33,11 @@
 > Please be aware that you cannot use this MCP without an OpenAI-compatible API key.
 > To gen. one, please visit: https://platform.openai.com/account/api-keys
 
+> [!NOTE]
+> For the time being, this MCP is working with the branch `feat/modern_pythonic_library_transformation` from the
+> mother library, AutoDDG. See more at: https://github.com/VIDA-NYU/AutoDDG/pull/4.
+> As such, we recommend you to instal AutoDDG from source with this library, until the PR is merged upstream.
+
 ## 💡 About The MCPStack AutoDDG Tool
 
 This repository provides a **native MCP** around the **AutoDDG** library for dataset description and discovery:
