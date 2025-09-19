@@ -8,6 +8,8 @@
     <br>
   </h1>
   <h4 align="center">Automatic dataset topics & descriptions — powered by AutoDDG and MCPStack</h4>
+    <h4 align="center">Video Trailer Showing The MCP In Action: <a href="https://www.youtube.com/watch?v=Wer8y8FWwM8">https://www.youtube.com/watch?v=Wer8y8FWwM8</a></h4>
+
 </div>
 
 <div align="center">
