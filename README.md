@@ -4,10 +4,10 @@
     <br>
     <a href="#"><img src="assets/COVER.png" alt="MCPStack Tool" width="100%"></a>
     <br>
-    MCPStack Tool Builder
+    MCPStack AutoDDG MCP
     <br>
   </h1>
-  <h4 align="center">A Template To Fasten The Creation of MCP-Stack MCP Tools</h4>
+  <h4 align="center">Automatic dataset topics & descriptions — powered by AutoDDG and MCPStack</h4>
 </div>
 
 <div align="center">
@@ -16,168 +16,159 @@
   <img alt="pre-commit" src="https://img.shields.io/badge/pre--commit-enabled-1f6feb?style=for-the-badge&logo=pre-commit">
 </a>
 <img alt="ruff" src="https://img.shields.io/badge/Ruff-lint%2Fformat-9C27B0?style=for-the-badge&logo=ruff&logoColor=white">
-<img alt="python" src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img alt="python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white">
 <img alt="license" src="https://img.shields.io/badge/License-MIT-success?style=for-the-badge">
 
 </div>
 
 > [!IMPORTANT]
-> If you have not been across the MCPStack main orchestrator repository, please start
-> there: [View Org](https://github.com/MCP-Pipeline)
+> If you haven’t visited the MCPStack main orchestrator repository yet, please start
+> there: **[MCPStack](https://github.com/MCP-Pipeline/MCPStack)**
 
-## <a id="about-the-project"></a>💡 About The Project
+> [!CAUTION]
+> Please be aware that this MCP is in an early-alpha stage. While it is functional and can be used for various tasks, it may still contain bugs or incomplete features.
+> Feel free to report any issues you encounter or suggest improvements. Even better, feel free to contribute directly!
 
-`MCPStack Tool Builder` is a template repository designed to streamline the creation of `MCPStack` MCP Tools.
-As in, you are using the `MCPStack` main orchestrator repository and wish to create a new MCP tool to pipeline with.
-You can always start from scratch, but certainly, our `MCPStack Tool Builder` will help you get started quickly with a
-solid foundational skeleton builder.
+> [!WARNING]
+> Please be aware that you cannot use this MCP without an OpenAI-compatible API key.
+> To gen. one, please visit: https://platform.openai.com/account/api-keys
 
-**Wait, what is a Model Context Protocol (MCP) & `MCPStack` — In layman's terms ?**
+## 💡 About The MCPStack AutoDDG Tool
 
-The Model Context Protocol (MCP) standardises interactions with machine learning (Large Language) models,
-enabling tools and libraries to communicate successfully with a uniform workflow.
+This repository provides a **native MCP** around the **AutoDDG** library for dataset description and discovery:
 
-On the other hand, `MCPStack` is a framework that implements the protocol, and most importantly, allowing
-developers to create pipelines by stacking MCP tools of interest and launching them all in Claude Desktop.
-This allows the LLM to use all the tools stacked, and of course, if a tool is not of interest, do not include it in the
-pipeline and the LLM won't have access to it.
+- Load a CSV and keep a **deterministic sample** (by size or percentage).
+- **Profile** a dataframe ([datamart-style](https://pypi.org/project/datamart-profiler/) notes).
+- Infer a **semantic profile** for columns.
+- Generate a concise **topic**.
+- Produce a readable **dataset description**.
+- Expand that description for **search/discovery** (tune the `temperature` etc.).
+- Optionally **evaluate** the description with a separate evaluator key.
+
+AutoDDG official library (without the MCP wrapper): https://github.com/VIDA-NYU/AutoDDG
 
 ## Installation
 
-> [!NOTE]
-> As this repository is a template, you can always create a new repository from this template. Use
-> the "Use this template" button on the top right of the GitHub UI to create a new repository based on this template.
+The tool is distributed as a standard Python package. MCPStack will auto-discover it.
 
-Meanwhile, you may alos clone this repository and install it locally to start building your own `MStack` MCP tool.
-
-### Clone the repository
+### Via `uv` (recommended)
 
 ```bash
-git clone https://github.com/MCP-Pipeline/MCPStack-Tool-Builder.git
-cd MCPStack-Tool-Builder
+uv add mcpstack-autoddg
 ```
 
-### Install dependencies
-
-Using `UV` (recommended —— See official [UV documentation for installation of UV](https://uv.dev/docs/)):
-
+### Via pip
 ```bash
-uv sync
+pip install mcpstack-autoddg
 ```
 
-Using `pip`:
-
-```bash
-pip install -e .[dev]
-```
-
-### Install pre-commit hooks
-
-Via `UV`:
+###  (Dev) Pre-commit hooks
 
 ```bash
 uv run pre-commit install
+# or: pre-commit install
 ```
 
-Via `pip`:
+
+## Using With MCPStack — CLI workflow
+
+This tool declares entry points so MCPStack can see it automatically:
+
+```toml
+[project.entry-points."mcpstack.tools"]
+autoddgtool = "mcpstack_autoddg.tool:AutoDDGTool"
+
+[project.entry-points."mcpstack.tool_clis"]
+autoddgtool = "mcpstack_autoddg.cli:AutoDDGCLI.get_app"
+```
+
+### 1) (Optional) Configure environment
+
+AutoDDG requires an OpenAI-compatible key. You may optionally provide a separate evaluator key:
+
+```
+AUTO_DDG_OPENAI_API_KEY: "<your key>" (required for generation)
+AUTO_DDG_EVALUATOR_API_KEY: "<your key>" (optional; falls back to AUTO_DDG_OPENAI_API_KEY)
+```
+
+Use the CLI to generate a config file (useful for CI or sharing defaults):
 
 ```bash
-pre-commit install
+uv run mcpstack tools autoddg configure
+# Then is followed an interactive prompt to config and set parameters.
 ```
 
-## Create Your Tool's Skeleton
+Or you can pass parameters directly, e.g.:
+```bash
+uv run mcpstack tools autoddg configure \
+  --model-name gpt-4o-mini \
+  --description-words 120 \
+  --description-temperature 0.0 \
+  --topic-temperature 0.0 \
+  --api-key sk-... \
+  --evaluator-key sk-... \
+  -o autoddg_config.json \
+  --verbose
+```
 
-Once dependencies are installed, you can use the `mcpstack_tool` CLI to bootstrap and customise your tool’s skeleton.
-Every commands is run with `uv run mcpstack_tool.py` or `python mcpstack_tool.py` if you are not using `UV`, followed by the command you want to run; as follows:
+For others, feel free to `uv run mcpstack tools autoddg --help` to see all options.
 
-<img src="assets/readme/help.gif" width="61.8%" align="left" style="border-radius: 10px;"/>
+### 2) Add to a pipeline
 
-### `Help` Banner
-
-Run with `--help` or `-h` to display the banner and see all available commands.
+Create or extend a pipeline with AutoDDG:
 
 ```bash
-uv run mcpstack_tool.py --help
+# New pipeline
+uv run mcpstack pipeline autoddg --new-pipeline my_pipeline.json --tool-config autoddg_config.json
 ```
 
-<br clear="left">
-
-<br />
-
-<img src="assets/readme/init.gif" width="61.8%" align="right" style="border-radius: 10px;"/>
-
-### `Init`
-
-init starts an interactive prompt command-line-based process to generate your tool configuration.
-It will ask you for values like `tool_slug`, `class_name`, and `env_prefix`.
+```bash
+# Or append to an existing one
+uv run mcpstack pipeline autoddg --to-pipeline my_pipeline.json --tool-config autoddg_config.json
+```
 
 
-<br clear="right">
+## Programmatic API Workflow
 
-<br />
+Use the AutoDDG tool directly in a stack:
 
-<img src="assets/readme/preview.gif" width="61.8%" align="left" style="border-radius: 10px;"/>
+```python
+from MCPStack.stack import MCPStackCore
+from mcpstack_autoddg import AutoDDGTool
 
-### `Preview`
+pipeline = (
+    MCPStackCore()
+    .with_tool(AutoDDGTool(
+        model_name="gpt-4o-mini",
+        search_model_name=None,
+        semantic_model_name=None,
+        description_words=120,
+        description_temperature=0.0,
+        topic_temperature=0.0,
+        evaluator_model_name="gpt-4o",
+    ))
+    .build(type="fastmcp", save_path="autoddg_pipeline.json")
+    .run()
+)
+```
 
-preview shows you the replacements that would be applied across the codebase and displays an example diff.
-Note this could be also run from the `init`.
+### AutoDDG Actions Supported
 
-<br clear="left">
+> [!NOTE]
+> If any action fails, feel free to open an issue so we may update with the
+> potential changes on the mother library, AutoDDG.
+> https://github.com/VIDA-NYU/AutoDDG
 
-<br />
+* `load_dataset(csv_path|csv_text, sample_size?, sample_percent?, random_state=9)` → load CSV and store a sampled CSV string in state
+* `profile_dataset()` → datamart-like profile; may also return semantic notes
+* `generate_semantic_profile()` → infer semantic metadata for columns
+* `generate_topic(title, original_description?, dataset_sample?)` → concise dataset topic
+* `generate_description(dataset_sample?, use_profile=True, use_semantic_profile=True, use_topic=True)` → readable description; enforces prerequisites if the flags are left on
+* `expand_description_for_search()` → search-oriented variant of the last description (needs a topic)
+* `evaluate_description()` → runs evaluator (requires evaluator key or reuse of generation key)
+* `get_state_summary()` → booleans for which artifacts exist in state
 
-<img src="assets/readme/apply.gif" width="61.8%" align="right" style="border-radius: 10px;"/>
 
-### `Apply`
-
-Once happy, use apply to perform replacements and rename the package directory. Note this could be also run from the `init`.
-
-<br clear="right">
-
-<br />
-
-<img src="assets/readme/validate.gif" width="61.8%" align="left" style="border-radius: 10px;"/>
-
-### `Validate`
-
-Run validate to ensure placeholders were replaced correctly (or to check if any remain).
-
-<br clear="left">
-
-<br />
-
-<img src="assets/readme/reset.gif" width="61.8%" align="right" style="border-radius: 10px;"/>
-
-### `Reset` (Optional)
-
-Need to start fresh? Restore everything back from the scaffold with reset.
-
-> [!CAUTION]
-> ⚠️ Use --hard to overwrite files directly.
-
-<br clear="right">
-
-<br />
-
-<img src="assets/readme/doctor.gif" width="61.8%" align="left" style="border-radius: 10px;"/>
-
-### `Doctor`
-
-Finally, check the health of your repository with doctor.
-It reports `package dirs`, `entry points`, and `placeholder` status.
-
-<br />
-<br />
-<br />
-
-Here you go! 🎉 You now have a working `MCPStack` tool skeleton ready to customise.
-From here, edit `src/mcpstack_<your_tool_name>/tool.py` with the actions your MCP is aimed to be doing,
-and `cli.py` to implement your configurability logic. Remove a couple of files and folders not necessary as per the template
-and you may be good to go to submit this to the org or to play with it yourself!
-
-Refer to the `MCPStack` documentation for more details on how to implement your tool logic.
-
-## 🔐 License
+## License
 
 MIT — see **[LICENSE](LICENSE)**.
